@@ -1,0 +1,31 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments (do NOT upload to GitHub!)
+venv/
+.venv/
+env/
+ENV/
+
+# Python packaging
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+setup.log
+
+# System & IDE files
+.DS_Store
+Thumbs.db
+.directory
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local user projects data (optional cache/projects)
+*.tmp
