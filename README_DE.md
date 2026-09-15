@@ -1,11 +1,12 @@
+[🇩🇪 Zur deutschen Dokumentation wechseln](README_DE.md) | [🇬🇧 Switch to English Documentation](README.md)
+
 # 🛠️ Textual TUI-Creator
 
+[![GitHub](https://img.shields.io/badge/GitHub-Graba92%2Ftextual--tui--creator-blue?logo=github)](https://github.com/Graba92/textual-tui-creator)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)](https://python.org)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python)](https://python.org)
 [![Framework](https://img.shields.io/badge/Framework-Textual-green.svg)](https://textual.textualize.io)
 [![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
-
-[🇬🇧 Switch to English Documentation](README.md)
 
 <p align="center">
   <img src="preview_editor.png" alt="Textual TUI-Creator Visueller Designer" width="900">
