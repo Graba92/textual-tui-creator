@@ -97,19 +97,20 @@ pip install -r requirements.txt
 ### Launch the Editor
 ```bash
 ./run.sh
-# or
-./start_tui_creator.sh
-# or
-python3 tui_creator.py
+# or launch with explicit language
+python3 tui_creator.py --lang en
+python3 tui_creator.py --lang de
 ```
 
 ### ⌨️ Keybindings
 
 | Shortcut | Action |
 | :---: | :--- |
+| `L` | Toggle language between **English** and **Deutsch** |
 | `Ctrl + S` | Save current project |
 | `Ctrl + Z` | Undo last operation |
 | `Ctrl + Y` | Redo last operation |
+| `Ctrl + E` | Export code to `.py` file |
 | `F1` | Display help & shortcuts modal |
 | `Esc` | Return to project home / overview |
 | `Tab` / `Shift+Tab` | Cycle focus between tree, preview, and inspector |

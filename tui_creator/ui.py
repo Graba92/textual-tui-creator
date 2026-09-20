@@ -20,6 +20,7 @@ from tui_creator.storage import (
 )
 from tui_creator.components import COMPONENT_REGISTRY, COMPONENT_ICONS, create_preview_widget
 from tui_creator.generator import generate_python_code
+from tui_creator.i18n import t, set_language, get_language, toggle_language
 
 
 class ConfirmDialog(ModalScreen[bool]):
@@ -32,8 +33,8 @@ class ConfirmDialog(ModalScreen[bool]):
         with Vertical(id="dialog"):
             yield Label(self.message, id="dialog-msg")
             with Horizontal(id="dialog-buttons"):
-                yield Button("Abbrechen", variant="default", id="btn-cancel")
-                yield Button("Bestätigen", variant="error", id="btn-ok")
+                yield Button(t("btn_cancel"), variant="default", id="btn-cancel")
+                yield Button(t("btn_confirm"), variant="error", id="btn-ok")
 
     @on(Button.Pressed, "#btn-cancel")
     def cancel(self):
@@ -56,8 +57,8 @@ class InputDialog(ModalScreen[Optional[str]]):
             yield Label(self.title, classes="prop-header")
             yield Input(value=self.default, id="dialog-input")
             with Horizontal(id="dialog-buttons"):
-                yield Button("Abbrechen", variant="error", id="btn-cancel")
-                yield Button("Speichern", variant="success", id="btn-ok")
+                yield Button(t("btn_cancel"), variant="error", id="btn-cancel")
+                yield Button(t("btn_save"), variant="success", id="btn-ok")
 
     def on_mount(self):
         self.query_one(Input).focus()
@@ -78,18 +79,18 @@ class NewProjectDialog(ModalScreen[Optional[dict]]):
         tpl_options = [(info["name"], key) for key, info in templates.items()]
 
         with Vertical(id="dialog", classes="large-dialog"):
-            yield Label("⚡ Neues TUI-Projekt erstellen", classes="prop-header")
-            yield Label("Projektname:", classes="prop-label")
+            yield Label(t("new_proj_dialog_title"), classes="prop-header")
+            yield Label(t("lbl_proj_name"), classes="prop-label")
             yield Input(placeholder="MeinTuiProjekt", id="input-proj-name")
             
-            yield Label("Vorlage wählen:", classes="prop-label")
+            yield Label(t("lbl_choose_template"), classes="prop-label")
             yield Select(options=tpl_options, value="blank", id="select-template", allow_blank=False)
             
             yield Label("", id="lbl-template-desc", classes="subtitle")
             
             with Horizontal(id="dialog-buttons"):
-                yield Button("Abbrechen", variant="error", id="btn-cancel")
-                yield Button("Projekt erstellen", variant="success", id="btn-create-proj")
+                yield Button(t("btn_cancel"), variant="error", id="btn-cancel")
+                yield Button(t("btn_create_proj"), variant="success", id="btn-create-proj")
 
     def on_mount(self):
         self.update_desc("blank")
@@ -143,27 +144,38 @@ class ComponentSelectDialog(ModalScreen[Optional[str]]):
 class StartScreen(Screen):
     """Start- und Projektverwaltungs-Bildschirm."""
     BINDINGS = [
-        Binding("escape", "quit", "Beenden"),
-        Binding("q", "quit", "Beenden"),
-        Binding("n", "new_project", "Neues Projekt"),
-        Binding("t", "new_from_template", "Aus Vorlage"),
-        Binding("d", "delete_selected", "Projekt löschen"),
+        Binding("escape", "quit", "Beenden / Quit"),
+        Binding("q", "quit", "Beenden / Quit"),
+        Binding("n", "new_project", "Neues Projekt / New Project"),
+        Binding("t", "new_from_template", "Aus Vorlage / Template"),
+        Binding("d", "delete_selected", "Löschen / Delete"),
+        Binding("l", "toggle_lang", "🌐 DE/EN"),
     ]
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
         with Vertical(id="start-container"):
-            yield Label("⚡ TUI-CREATOR 2.0 (Valhalla Suite)", id="main-title")
-            yield Label("Visueller Designer & nativer Code-Generator für Textual", classes="subtitle")
+            yield Label(f"⚡ {t('start_title')}", id="main-title")
+            yield Label(t("start_subtitle"), classes="subtitle")
             
             with Horizontal(id="start-actions"):
-                yield Button("Neues Projekt [n]", variant="success", id="btn-new")
-                yield Button("Projekt löschen [d]", variant="error", id="btn-delete-proj")
+                yield Button(f"{t('btn_new_project')} [n]", variant="success", id="btn-new")
+                yield Button(f"{t('btn_delete_project')} [d]", variant="error", id="btn-delete-proj")
+                yield Button(t("btn_lang_toggle"), variant="warning", id="btn-lang")
             
-            yield Label("Vorhandene Projekte (Enter zum Öffnen):", classes="section-title")
+            yield Label(t("start_projects_title"), id="lbl-projects-header", classes="section-title")
             yield ListView(id="project-list")
             
         yield Footer()
+
+    def action_toggle_lang(self):
+        new_lang = toggle_language()
+        self.notify(f"Sprache gewechselt zu: {new_lang.upper()}", timeout=2.0)
+        self.query_one("#btn-lang", Button).label = t("btn_lang_toggle")
+        self.query_one("#btn-new", Button).label = f"{t('btn_new_project')} [n]"
+        self.query_one("#btn-delete-proj", Button).label = f"{t('btn_delete_project')} [d]"
+        self.query_one("#lbl-projects-header", Label).update(t("start_projects_title"))
+        self.refresh_projects()
 
     def on_mount(self):
         self.refresh_projects()
@@ -241,13 +253,14 @@ class EditorScreen(Screen):
     - Rechts: Eigenschafts-Inspektor mit typisierten Eingabefeldern
     """
     BINDINGS = [
-        Binding("ctrl+s", "save", "Speichern"),
-        Binding("ctrl+z", "undo", "Rückgängig"),
-        Binding("ctrl+y", "redo", "Wiederholen"),
-        Binding("ctrl+e", "export_code", "Code exportieren"),
-        Binding("f1", "help", "Hilfe"),
-        Binding("f5", "refresh_view", "Aktualisieren"),
-        Binding("escape", "back", "Zurück"),
+        Binding("ctrl+s", "save", "Speichern / Save"),
+        Binding("ctrl+z", "undo", "Rückgängig / Undo"),
+        Binding("ctrl+y", "redo", "Wiederholen / Redo"),
+        Binding("ctrl+e", "export_code", "Exportieren / Export"),
+        Binding("f1", "help", "Hilfe / Help"),
+        Binding("f5", "refresh_view", "Aktualisieren / Refresh"),
+        Binding("l", "toggle_lang", "🌐 DE/EN"),
+        Binding("escape", "back", "Zurück / Back"),
     ]
 
     def __init__(self, project: ProjectModel):
@@ -267,14 +280,14 @@ class EditorScreen(Screen):
         with Horizontal(id="editor-layout"):
             # Linke Spalte: Struktur & Hierarchie
             with Vertical(id="left-panel"):
-                yield Label("📁 Projekt-Struktur", classes="panel-title")
+                yield Label(f"📁 {t('editor_panel_components')}", id="lbl-left-panel", classes="panel-title")
                 yield Tree("Projekt", id="comp-tree")
                 with Horizontal(id="tree-actions"):
-                    yield Button("+", id="btn-add", tooltip="Komponente hinzufügen", variant="success")
-                    yield Button("▲", id="btn-move-up", tooltip="Nach oben verschieben", variant="default")
-                    yield Button("▼", id="btn-move-down", tooltip="Nach unten verschieben", variant="default")
-                    yield Button("📋", id="btn-clone", tooltip="Komponente duplizieren", variant="primary")
-                    yield Button("✖", id="btn-del", tooltip="Komponente löschen", variant="error")
+                    yield Button("+", id="btn-add", tooltip=t("btn_add_component"), variant="success")
+                    yield Button("▲", id="btn-move-up", tooltip="Nach oben", variant="default")
+                    yield Button("▼", id="btn-move-down", tooltip="Nach unten", variant="default")
+                    yield Button("📋", id="btn-clone", tooltip="Duplizieren", variant="primary")
+                    yield Button("✖", id="btn-del", tooltip=t("btn_remove_component"), variant="error")
                     
             # Mittlere Spalte: Live-Vorschau & Python-Code
             with Vertical(id="center-panel"):
@@ -287,18 +300,26 @@ class EditorScreen(Screen):
                     yield Static("", id="code-view-text")
                 
                 with Horizontal(id="preview-actions"):
-                    yield Button("💾 Speichern [Ctrl+S]", variant="success", id="btn-save")
-                    yield Button("🚀 Code exportieren [Ctrl+E]", variant="primary", id="btn-export")
+                    yield Button(f"💾 {t('btn_save')} [Ctrl+S]", variant="success", id="btn-save")
+                    yield Button(f"🚀 {t('btn_export_code')} [Ctrl+E]", variant="primary", id="btn-export")
                     yield Button("⚡ Aktualisieren [F5]", variant="default", id="btn-refresh")
                     
             # Rechte Spalte: Eigenschaften-Inspektor
             with Vertical(id="right-panel"):
-                yield Label("⚙️ Eigenschaften", classes="panel-title")
+                yield Label(f"⚙️ {t('editor_panel_props')}", id="lbl-right-panel", classes="panel-title")
                 with VerticalScroll(id="props-container"):
-                    yield Label("Bitte eine Komponente auswählen.")
+                    yield Label(t("lbl_no_selection"), id="lbl-props-empty")
                 yield Button("✔ Änderungen anwenden", variant="success", id="btn-apply-props")
 
         yield Footer()
+
+    def action_toggle_lang(self):
+        new_lang = toggle_language()
+        self.notify(f"Sprache gewechselt zu: {new_lang.upper()}", timeout=2.0)
+        self.query_one("#lbl-left-panel", Label).update(f"📁 {t('editor_panel_components')}")
+        self.query_one("#lbl-right-panel", Label).update(f"⚙️ {t('editor_panel_props')}")
+        self.query_one("#btn-save", Button).label = f"💾 {t('btn_save')} [Ctrl+S]"
+        self.query_one("#btn-export", Button).label = f"🚀 {t('btn_export_code')} [Ctrl+E]"
 
     async def on_mount(self):
         # Initial: Preview sichtbar, Code ausgeblendet

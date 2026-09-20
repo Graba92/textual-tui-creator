@@ -97,19 +97,20 @@ pip install -r requirements.txt
 ### Editor starten
 ```bash
 ./run.sh
-# oder
-./start_tui_creator.sh
-# oder
-python3 tui_creator.py
+# oder mit expliziter Sprache starten
+python3 tui_creator.py --lang de
+python3 tui_creator.py --lang en
 ```
 
 ### ⌨️ Tastaturkürzel im Editor
 
 | Tastenkombination | Aktion |
 | :---: | :--- |
+| `L` | Sprache dynamisch umschalten (**Deutsch** / **Englisch**) |
 | `Strg + S` | Projekt sofort speichern |
 | `Strg + Z` | Rückgängig (Undo) |
 | `Strg + Y` | Wiederholen (Redo) |
+| `Strg + E` | Code als `.py`-Datei exportieren |
 | `F1` | Hilfe & Schnellanleitung aufrufen |
 | `Esc` | Zurück zum Startbildschirm / Menü |
 | `Tab` / `Shift+Tab` | Zwischen Baum, Vorschau und Inspektor wechseln |
